@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="css/weather.css" />
+	</head>
+
+	<body ng-app="myapp" style="background: url(img/bg.jpeg);background-attachment: fixed;background-size: 100% 100%;">
+		
+<!---->		
+		<div ng-controller="WeatherCtrl as ctrl" class="all">
+			<div class="d1">
+				<span class="s1"></span>
+				<span class="s2"></span>
+				<span class="s3"></span>
+			</div>
+
+			<div class="close" style="background: url(img/bg1.jpeg);background-attachment: fixed;background-size: 100% 100%;">
+				<div class="open_div">
+					<input ng-model="ctrl.city" class="input" type="text" />
+				</div>
+				<div class="open_div1">
+					<button ng-click="ctrl.query()" class="open_btn">查询</button>
+				</div>
+			</div>
+
+			<div class="header">
+				<div class="where">
+					<h3 style="color: #ccc;">{{ctrl.city}}</h3>
+				</div>
+				<div class="tem">{{ctrl.info_tem}}℃</div>
+				<div class="tem1">
+					<h3 ng-bind="ctrl.info" style="color: #F0AD4E; margin-right: 10px;"></h3>
+				</div>
+			</div>
+			
+			<div class="update">
+				<h5 style="color: #ccc;margin-right: 10px;">更新于07:45</h5>
+			</div>
+
+
+			<div class="sandaybg">
+				<div class="sanday">
+					<div class="day">最近三天</div>
+					<div class="day1">
+						<div ng-bind="ctrl.info_date1" class="dy1"></div>
+						<div ng-bind="ctrl.info" class="dy2">晴转多云</div>
+						<div ng-bind="ctrl.info_temMax1" class="dy3">19</div>
+						<div ng-bind="ctrl.info_temMin1" class="dy4">19</div>
+					</div>
+					<div class="day2">
+						<div ng-bind="ctrl.info_date2" class="dy1"></div>
+						<div ng-bind="ctrl.info1" class="dy2">晴转多云</div>
+						<div ng-bind="ctrl.info_temMax2" class="dy3">19</div>
+						<div ng-bind="ctrl.info_temMin2" class="dy4">19</div>
+					</div>
+					<div class="day3">
+						<div ng-bind="ctrl.info_date3" class="dy1">2018-10-19</div>
+						<div ng-bind="ctrl.info2" class="dy2">晴转多云</div>
+						<div ng-bind="ctrl.info_temMax3" class="dy3">19</div>
+						<div ng-bind="ctrl.info_temMin3" class="dy4">19</div>
+					</div>
+				</div>
+			</div>
+
+
+<!---->
+			<div ng-controller="AirCtrl as actrl" class="airbg">
+				<div class="air">
+					<div class="day">空气质量</div>
+					<div class="day1">
+						<div ng-bind="actrl.info" class="air1">54</div>
+						<div class="air2">58</div>
+					</div>
+					<div class="day1">
+						<div class="air3">AQI指数</div>
+						<div class="air4">PM10指数</div>
+					</div>
+				</div>
+			</div>
+
+
+<!---->
+			<div class="lifebg">
+				<div class="life">
+					<div class="day">生活建议</div>
+				</div>
+				
+			</div>
+
+		</div>
+
+		<script src="js/mui.min.js"></script>
+		<script src="js/angular.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/jquery.min.js" type="text/javascript"></script>
+		<script type="text/javascript" charset="utf-8">
+			mui.init();
+			$(".d1").click(function() {
+				$(".d1").toggleClass("d1-open");
+				$(".close").toggleClass("open");
+			});
+		</script>
+		<script type="text/javascript">
+			
+			
+/*最近三天的天气状况*/			
+			var myapp = angular.module("myapp", []);
+			myapp.controller('WeatherCtrl', ['$http', function($http) {
+				var self = this;
+				self.query = function() {
+					var w_url = "https://free-api.heweather.com/s6/weather/forecast?location=" + self.city + "&key=19dd87311148465e9141b52c8331c34c";
+					$http({
+						method: 'GET',
+						url: w_url
+					}).then(function success(response) {
+						self.info_tem = response.data.HeWeather6[0].daily_forecast[0].vis;
+						self.info = response.data.HeWeather6[0].daily_forecast[0].cond_txt_d;
+						self.info1 = response.data.HeWeather6[0].daily_forecast[1].cond_txt_d;
+						self.info2 = response.data.HeWeather6[0].daily_forecast[2].cond_txt_d;
+						self.info_date1 = response.data.HeWeather6[0].daily_forecast[0].date;
+						self.info_date2 = response.data.HeWeather6[0].daily_forecast[1].date;
+						self.info_date3 = response.data.HeWeather6[0].daily_forecast[2].date;
+						self.info_temMax1 = response.data.HeWeather6[0].daily_forecast[0].tmp_max;
+						self.info_temMin1 = response.data.HeWeather6[0].daily_forecast[0].tmp_min;
+						self.info_temMax2 = response.data.HeWeather6[0].daily_forecast[1].tmp_max;
+						self.info_temMin2 = response.data.HeWeather6[0].daily_forecast[1].tmp_min;
+						self.info_temMax3 = response.data.HeWeather6[0].daily_forecast[2].tmp_max;
+						self.info_temMin3 = response.data.HeWeather6[0].daily_forecast[2].tmp_min;
+					}, function error(response) {
+
+					});
+				}
+			}]);
+			
+			
+	/*空气指数*/		
+			myapp.controller('AirCtrl', ['$http', function($http) {
+				var self = this;
+				self.query = function() {
+					var a_url = "https://free-api.heweather.com/s6/weather/forecast?location=" + self.city + "&key=19dd87311148465e9141b52c8331c34c";
+					$http({
+						method: 'GET',
+						url: a_url
+					}).then(function success(response) {
+						self.info=response.data.HeWeather6[0].air_now_city[0].aqi;
+					}, function error(response) {
+
+					});
+				}
+			}]);
+		
+		
+		myapp.controller('ClothesCtrl',['$http',function($http){
+			var self=this;
+			
+		}])
+		</script>
+	</body>
+<!--https://free-api.heweather.com/s6/air/now?location=" + self.city + "&key=19dd87311148465e9141b52c8331c34c-->
+</html>
